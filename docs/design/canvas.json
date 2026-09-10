@@ -1,0 +1,25 @@
+{
+  "pages": [
+    { "id": "page-1", "name": "Identité & écrans" },
+    { "id": "page-2", "name": "Pistes explorées" }
+  ],
+  "artboards": [
+    { "file": "Identity.dc.html",      "x": 0,    "y": 0,    "w": 1120, "h": 980, "page": "page-1", "title": "Identité visuelle" },
+    { "file": "Sidebar.dc.html",       "x": 1260, "y": 0,    "w": 560,  "h": 900, "page": "page-1", "title": "Barre latérale" },
+    { "file": "Login.dc.html",         "x": 0,    "y": 1120, "w": 1440, "h": 900, "page": "page-1", "title": "Connexion" },
+    { "file": "Main.dc.html",          "x": 1560, "y": 1120, "w": 1440, "h": 900, "page": "page-1", "title": "Projets" },
+    { "file": "ProjectDetail.dc.html", "x": 0,    "y": 2140, "w": 1440, "h": 900, "page": "page-1", "title": "Détail projet" },
+    { "file": "TaskDetail.dc.html",    "x": 1560, "y": 2140, "w": 1440, "h": 900, "page": "page-1", "title": "Détail tâche" },
+    { "file": "DirectionB.dc.html",    "x": 0,    "y": 0,    "w": 880,  "h": 600, "page": "page-2", "title": "Piste B" },
+    { "file": "DirectionC.dc.html",    "x": 980,  "y": 0,    "w": 880,  "h": 600, "page": "page-2", "title": "Piste C" }
+  ],
+  "annotations": [
+    { "id": "note-direction", "x": 0, "y": -170, "w": 620, "page": "page-1",
+      "text": "Direction retenue — « atelier » : encre chaude sur papier, une seule couleur de marque (teal profond, hérité du #0f6c93 de l'app), un rouille réservé à l'urgence.\nArchivo pour l'interface, IBM Plex Mono pour les dates et compteurs." },
+    { "id": "note-sidebar", "x": 1260, "y": -170, "w": 560, "page": "page-1",
+      "text": "La barre latérale n'apparaît qu'une fois connecté : Connexion est le seul écran sans elle." },
+    { "id": "note-pistes", "x": 0, "y": -150, "w": 700, "page": "page-2",
+      "text": "Deux pistes esquissées avant de trancher. B a été retenue et développée page 1 ; C reste ici si tu préfères libérer la largeur." }
+  ],
+  "launch": { "view": "canvas", "page": "page-1" }
+}

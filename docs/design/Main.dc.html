@@ -1,0 +1,164 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin:0; background:#F2F1ED; color:#191A18;
+           font-family:'Archivo','Helvetica Neue',Arial,sans-serif;
+           -webkit-font-smoothing:antialiased; }
+    a { color:#14555F; text-decoration:none; }
+    a:hover { color:#0E3D45; text-decoration:underline; }
+    * { box-sizing:border-box; }
+  </style>
+</helmet>
+<div style="width:1440px; height:900px; display:flex; background:#F2F1ED">
+<aside style="width:260px; flex-shrink:0; background:#17201E; display:flex; flex-direction:column; padding:18px 0; gap:4px">
+  <div style="padding:0 18px 16px; display:flex; align-items:center; gap:11px"><svg width="30" height="30" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="#F2F1ED"></rect><rect x="9" y="10.5" width="22" height="4.5" rx="2.25" fill="#14555F"></rect><rect x="14" y="17.75" width="17" height="4.5" rx="2.25" fill="#191A18" opacity="0.45"></rect><rect x="9" y="25" width="12" height="4.5" rx="2.25" fill="#191A18" opacity="0.2"></rect></svg>
+    <span style="color:#F2F1ED; font-size:19px; font-weight:700; font-stretch:120%; letter-spacing:-.01em">PMT</span></div>
+  <div style="padding:0 12px 14px">
+    <div style="background:rgba(242,241,237,.06); border:1px solid rgba(242,241,237,.1); border-radius:8px; padding:9px 11px; display:flex; align-items:center; gap:10px">
+      <span style="width:8px; height:8px; border-radius:2px; background:#B4531F; flex-shrink:0"></span>
+      <div style="display:flex; flex-direction:column; gap:1px; flex-grow:1; min-width:0">
+        <span style="color:#F2F1ED; font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">Refonte du site</span>
+        <span style="color:rgba(242,241,237,.45); font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase">Administrateur</span>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(242,241,237,.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"></path></svg>
+    </div>
+  </div>
+  <div style="padding:0 12px; display:flex; flex-direction:column; gap:2px">
+    <div style="background:rgba(242,241,237,.1); display:flex; align-items:center; gap:11px; padding:9px 11px; border-radius:7px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F2F1ED" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg><span style="color:#F2F1ED; font-weight:600; font-size:13.5px">Projets</span></div>
+    <div style="display:flex; align-items:center; gap:11px; padding:9px 11px; border-radius:7px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(242,241,237,.62)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"></path><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"></path></svg><span style="color:rgba(242,241,237,.72); flex-grow:1; font-size:13.5px">Mes tâches</span><span style="background:#B4531F; color:#FFFFFF; font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace; font-size:10px; font-weight:500; padding:1px 6px; border-radius:9px">4</span></div>
+    <div style="display:flex; align-items:center; gap:11px; padding:9px 11px; border-radius:7px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(242,241,237,.62)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path></svg><span style="color:rgba(242,241,237,.72); font-size:13.5px">Équipe</span></div>
+    <div style="display:flex; align-items:center; gap:11px; padding:9px 11px; border-radius:7px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(242,241,237,.62)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"></rect><path d="M3 10h18M8 2v4M16 2v4"></path></svg><span style="color:rgba(242,241,237,.72); font-size:13.5px">Calendrier</span></div>
+  </div>
+  <div style="padding:20px 23px 8px"><span style="color:rgba(242,241,237,.36); font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase">Projets récents</span></div>
+  <div style="padding:0 12px; display:flex; flex-direction:column; gap:1px">
+    <div style="display:flex; align-items:center; gap:11px; padding:7px 11px; border-radius:7px"><span style="width:7px; height:7px; border-radius:2px; background:#B4531F; flex-shrink:0"></span><span style="color:rgba(242,241,237,.72); font-size:13px">Refonte du site</span></div>
+    <div style="display:flex; align-items:center; gap:11px; padding:7px 11px; border-radius:7px"><span style="width:7px; height:7px; border-radius:2px; background:#3E6B4C; flex-shrink:0"></span><span style="color:rgba(242,241,237,.72); font-size:13px">Migration MySQL 8</span></div>
+    <div style="display:flex; align-items:center; gap:11px; padding:7px 11px; border-radius:7px"><span style="width:7px; height:7px; border-radius:2px; background:#4A3F7A; flex-shrink:0"></span><span style="color:rgba(242,241,237,.72); font-size:13px">Audit de sécurité</span></div>
+  </div>
+  <div style="flex-grow:1"></div>
+  <div style="padding:12px 12px 0; display:flex; flex-direction:column; gap:2px; border-top:1px solid rgba(242,241,237,.09)">
+    <div style="display:flex; align-items:center; gap:11px; padding:9px 11px; border-radius:7px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(242,241,237,.62)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6h.09A1.65 1.65 0 0 0 10.6 3.09V3a2 2 0 1 1 4 0v.09A1.65 1.65 0 0 0 16.11 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><span style="color:rgba(242,241,237,.72); font-size:13.5px">Paramètres</span></div>
+    <div style="display:flex; align-items:center; gap:10px; padding:9px 11px; border-radius:7px">
+      <span style="width:26px; height:26px; border-radius:50%; background:#14555F; color:#F2F1ED; font-size:11px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0">AD</span>
+      <div style="display:flex; flex-direction:column; flex-grow:1; min-width:0">
+        <span style="color:#F2F1ED; font-size:12.5px; font-weight:600">Alice Durand</span>
+        <span style="color:rgba(242,241,237,.4); font-size:11px">alice&#64;pmt.fr</span>
+      </div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(242,241,237,.5)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="M16 17l5-5-5-5M21 12H9"></path></svg>
+    </div>
+  </div>
+</aside>
+<main style="flex-grow:1; display:flex; flex-direction:column; overflow:hidden">
+
+  <header style="padding:26px 36px 22px; display:flex; align-items:flex-start; justify-content:space-between; gap:24px; border-bottom:1px solid #E0DFD8; background:#F2F1ED">
+    <div style="display:flex; flex-direction:column; gap:3px">
+      <h1 style="margin:0; font-size:27px; font-weight:600; letter-spacing:-.018em">Projets</h1>
+      <p style="margin:0; font-size:13.5px; color:#5E605B">Vous ne voyez que les projets dont vous êtes membre.</p>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px">
+      <div style="display:flex; align-items:center; gap:8px; background:#FFFFFF; border:1px solid #D8D6CE; border-radius:7px; padding:8px 12px; width:230px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8E9089" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+        <span style="font-size:13.5px; color:#8E9089">Rechercher un projet</span>
+      </div>
+      <span style="background:#14555F; color:#FFFFFF; font-size:13.5px; font-weight:600; padding:9px 16px; border-radius:7px; display:flex; align-items:center; gap:7px">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+        Nouveau projet
+      </span>
+    </div>
+  </header>
+
+  <div style="padding:24px 36px; display:flex; gap:14px; align-items:center; border-bottom:1px solid #E0DFD8">
+    <span style="background:#191A18; color:#F2F1ED; font-size:12.5px; font-weight:600; padding:6px 13px; border-radius:20px">Tous · 3</span>
+    <span style="background:#FFFFFF; border:1px solid #D8D6CE; color:#5E605B; font-size:12.5px; font-weight:500; padding:6px 13px; border-radius:20px">Où je suis admin · 2</span>
+    <span style="background:#FFFFFF; border:1px solid #D8D6CE; color:#5E605B; font-size:12.5px; font-weight:500; padding:6px 13px; border-radius:20px">Archivés · 0</span>
+    <div style="flex-grow:1"></div>
+    <span style="font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:.11em; text-transform:uppercase; color:#8E9089">Trier par · récents</span>
+  </div>
+
+  <div style="padding:28px 36px; display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:18px; align-content:start">
+    <div style="background:#FFFFFF; border:1px solid #E0DFD8; border-radius:10px; padding:20px; display:flex; flex-direction:column; gap:14px">
+  <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px">
+    <div style="display:flex; align-items:center; gap:9px; min-width:0">
+      <span style="width:9px; height:9px; border-radius:2px; background:#B4531F; flex-shrink:0"></span>
+      <span style="font-size:16.5px; font-weight:600; letter-spacing:-.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">Refonte du site</span>
+    </div>
+    <span style="background:#E4E0F0; color:#4A3F7A; font-size:10.5px; font-weight:600; letter-spacing:.03em; text-transform:uppercase; padding:3px 8px; border-radius:4px">Administrateur</span>
+  </div>
+  <p style="margin:0; font-size:13.5px; color:#5E605B; line-height:1.5; min-height:40px">Migration de la vitrine vers Angular 19 et reprise du parcours d'inscription.</p>
+  <div style="display:flex; flex-direction:column; gap:7px">
+    <div style="display:flex; justify-content:space-between; align-items:baseline">
+      <span style="font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:.11em; text-transform:uppercase; color:#8E9089">Avancement</span>
+      <span style="font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace; font-size:12px; font-weight:500; color:#191A18">7/12</span>
+    </div>
+    <div style="height:5px; border-radius:3px; background:#EDECE6; overflow:hidden">
+      <div style="width:58%; height:100%; background:#3E6B4C"></div>
+    </div>
+  </div>
+  <div style="height:1px; background:#EDECE6"></div>
+  <div style="display:flex; align-items:center; justify-content:space-between">
+    <div style="display:flex; align-items:center; padding-left:7px"><span style="width:26px; height:26px; border-radius:50%; background:#14555F; color:#FFFFFF; font-size:10px; font-weight:600; display:flex; align-items:center; justify-content:center; border:2px solid #FFFFFF; margin-left:-7px">AD</span><span style="width:26px; height:26px; border-radius:50%; background:#B4531F; color:#FFFFFF; font-size:10px; font-weight:600; display:flex; align-items:center; justify-content:center; border:2px solid #FFFFFF; margin-left:-7px">BM</span><span style="width:26px; height:26px; border-radius:50%; background:#4A3F7A; color:#FFFFFF; font-size:10px; font-weight:600; display:flex; align-items:center; justify-content:center; border:2px solid #FFFFFF; margin-left:-7px">CO</span></div>
+    <span style="font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace; font-size:11.5px; color:#8E9089">Début 15/09/2026</span>
+  </div>
+</div>
+    <div style="background:#FFFFFF; border:1px solid #E0DFD8; border-radius:10px; padding:20px; display:flex; flex-direction:column; gap:14px">
+  <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px">
+    <div style="display:flex; align-items:center; gap:9px; min-width:0">
+      <span style="width:9px; height:9px; border-radius:2px; background:#3E6B4C; flex-shrink:0"></span>
+      <span style="font-size:16.5px; font-weight:600; letter-spacing:-.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">Migration MySQL 8</span>
+    </div>
+    <span style="background:#DCE8E9; color:#14555F; font-size:10.5px; font-weight:600; letter-spacing:.03em; text-transform:uppercase; padding:3px 8px; border-radius:4px">Membre</span>
+  </div>
+  <p style="margin:0; font-size:13.5px; color:#5E605B; line-height:1.5; min-height:40px">Passage de la base en utf8mb4 et reprise des scripts d'initialisation.</p>
+  <div style="display:flex; flex-direction:column; gap:7px">
+    <div style="display:flex; justify-content:space-between; align-items:baseline">
+      <span style="font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:.11em; text-transform:uppercase; color:#8E9089">Avancement</span>
+      <span style="font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace; font-size:12px; font-weight:500; color:#191A18">9/10</span>
+    </div>
+    <div style="height:5px; border-radius:3px; background:#EDECE6; overflow:hidden">
+      <div style="width:90%; height:100%; background:#3E6B4C"></div>
+    </div>
+  </div>
+  <div style="height:1px; background:#EDECE6"></div>
+  <div style="display:flex; align-items:center; justify-content:space-between">
+    <div style="display:flex; align-items:center; padding-left:7px"><span style="width:26px; height:26px; border-radius:50%; background:#14555F; color:#FFFFFF; font-size:10px; font-weight:600; display:flex; align-items:center; justify-content:center; border:2px solid #FFFFFF; margin-left:-7px">AD</span><span style="width:26px; height:26px; border-radius:50%; background:#B4531F; color:#FFFFFF; font-size:10px; font-weight:600; display:flex; align-items:center; justify-content:center; border:2px solid #FFFFFF; margin-left:-7px">BM</span></div>
+    <span style="font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace; font-size:11.5px; color:#8E9089">Début 01/09/2026</span>
+  </div>
+</div>
+    <div style="background:#FFFFFF; border:1px solid #E0DFD8; border-radius:10px; padding:20px; display:flex; flex-direction:column; gap:14px">
+  <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px">
+    <div style="display:flex; align-items:center; gap:9px; min-width:0">
+      <span style="width:9px; height:9px; border-radius:2px; background:#4A3F7A; flex-shrink:0"></span>
+      <span style="font-size:16.5px; font-weight:600; letter-spacing:-.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">Audit de sécurité</span>
+    </div>
+    <span style="background:#EAE9E3; color:#5E605B; font-size:10.5px; font-weight:600; letter-spacing:.03em; text-transform:uppercase; padding:3px 8px; border-radius:4px">Observateur</span>
+  </div>
+  <p style="margin:0; font-size:13.5px; color:#5E605B; line-height:1.5; min-height:40px">Revue des accès, des rôles projet et du parcours d'authentification.</p>
+  <div style="display:flex; flex-direction:column; gap:7px">
+    <div style="display:flex; justify-content:space-between; align-items:baseline">
+      <span style="font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:.11em; text-transform:uppercase; color:#8E9089">Avancement</span>
+      <span style="font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace; font-size:12px; font-weight:500; color:#191A18">2/8</span>
+    </div>
+    <div style="height:5px; border-radius:3px; background:#EDECE6; overflow:hidden">
+      <div style="width:25%; height:100%; background:#3E6B4C"></div>
+    </div>
+  </div>
+  <div style="height:1px; background:#EDECE6"></div>
+  <div style="display:flex; align-items:center; justify-content:space-between">
+    <div style="display:flex; align-items:center; padding-left:7px"><span style="width:26px; height:26px; border-radius:50%; background:#14555F; color:#FFFFFF; font-size:10px; font-weight:600; display:flex; align-items:center; justify-content:center; border:2px solid #FFFFFF; margin-left:-7px">AD</span><span style="width:26px; height:26px; border-radius:50%; background:#B4531F; color:#FFFFFF; font-size:10px; font-weight:600; display:flex; align-items:center; justify-content:center; border:2px solid #FFFFFF; margin-left:-7px">BM</span><span style="width:26px; height:26px; border-radius:50%; background:#4A3F7A; color:#FFFFFF; font-size:10px; font-weight:600; display:flex; align-items:center; justify-content:center; border:2px solid #FFFFFF; margin-left:-7px">CO</span><span style="width:26px; height:26px; border-radius:50%; background:#3E6B4C; color:#FFFFFF; font-size:10px; font-weight:600; display:flex; align-items:center; justify-content:center; border:2px solid #FFFFFF; margin-left:-7px">DL</span></div>
+    <span style="font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace; font-size:11.5px; color:#8E9089">Début 22/09/2026</span>
+  </div>
+</div>
+  </div>
+
+</main>
+</div>
+</x-dc>
+</body>
+</html>
