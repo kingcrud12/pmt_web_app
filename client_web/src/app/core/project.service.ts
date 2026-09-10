@@ -1,37 +1,43 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Member, Project, ProjectRole, Task } from './models';
+import {
+  ChangeRoleRequest, CreateProjectRequest, InviteMemberRequest,
+  MemberResponse, ProjectResponse, ProjectRole, TaskResponse,
+} from './models';
 
 @Injectable({ providedIn: 'root' })
 export class ProjectService {
   constructor(private readonly http: HttpClient) {}
 
-  list(): Observable<Project[]> {
-    return this.http.get<Project[]>('/api/projects');
+  list(): Observable<ProjectResponse[]> {
+    return this.http.get<ProjectResponse[]>('/api/projects');
   }
 
-  getOne(projectId: string): Observable<Project> {
-    return this.http.get<Project>(`/api/projects/${projectId}`);
+  getOne(projectId: string): Observable<ProjectResponse> {
+    return this.http.get<ProjectResponse>(`/api/projects/${projectId}`);
   }
 
-  create(name: string, description: string, startDate: string): Observable<Project> {
-    return this.http.post<Project>('/api/projects', { name, description, startDate });
+  create(name: string, description: string, startDate: string): Observable<ProjectResponse> {
+    const body: CreateProjectRequest = { name, description: description || null, startDate };
+    return this.http.post<ProjectResponse>('/api/projects', body);
   }
 
-  members(projectId: string): Observable<Member[]> {
-    return this.http.get<Member[]>(`/api/projects/${projectId}/members`);
+  members(projectId: string): Observable<MemberResponse[]> {
+    return this.http.get<MemberResponse[]>(`/api/projects/${projectId}/members`);
   }
 
-  invite(projectId: string, email: string, role: ProjectRole): Observable<Member> {
-    return this.http.post<Member>(`/api/projects/${projectId}/members`, { email, role });
+  invite(projectId: string, email: string, role: ProjectRole): Observable<MemberResponse> {
+    const body: InviteMemberRequest = { email, role };
+    return this.http.post<MemberResponse>(`/api/projects/${projectId}/members`, body);
   }
 
-  changeRole(projectId: string, userId: string, role: ProjectRole): Observable<Member> {
-    return this.http.put<Member>(`/api/projects/${projectId}/members/${userId}/role`, { role });
+  changeRole(projectId: string, userId: string, role: ProjectRole): Observable<MemberResponse> {
+    const body: ChangeRoleRequest = { role };
+    return this.http.put<MemberResponse>(`/api/projects/${projectId}/members/${userId}/role`, body);
   }
 
-  tasks(projectId: string): Observable<Task[]> {
-    return this.http.get<Task[]>(`/api/projects/${projectId}/tasks`);
+  tasks(projectId: string): Observable<TaskResponse[]> {
+    return this.http.get<TaskResponse[]>(`/api/projects/${projectId}/tasks`);
   }
 }

@@ -2,27 +2,29 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/auth.guard';
 
 export const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'projects' },
+  { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
   {
     path: 'login',
     loadComponent: () => import('./pages/login/login.component').then((m) => m.LoginComponent),
   },
   {
     path: 'register',
-    loadComponent: () =>
-      import('./pages/register/register.component').then((m) => m.RegisterComponent),
+    loadComponent: () => import('./pages/register/register.component').then((m) => m.RegisterComponent),
+  },
+  {
+    path: 'dashboard',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/dashboard/dashboard.component').then((m) => m.DashboardComponent),
   },
   {
     path: 'profile',
     canActivate: [authGuard],
-    loadComponent: () =>
-      import('./pages/profile/profile.component').then((m) => m.ProfileComponent),
+    loadComponent: () => import('./pages/profile/profile.component').then((m) => m.ProfileComponent),
   },
   {
     path: 'projects',
     canActivate: [authGuard],
-    loadComponent: () =>
-      import('./pages/projects/projects.component').then((m) => m.ProjectsComponent),
+    loadComponent: () => import('./pages/projects/projects.component').then((m) => m.ProjectsComponent),
   },
   {
     path: 'projects/:projectId',
@@ -33,8 +35,7 @@ export const routes: Routes = [
   {
     path: 'tasks/:taskId',
     canActivate: [authGuard],
-    loadComponent: () =>
-      import('./pages/task-detail/task-detail.component').then((m) => m.TaskDetailComponent),
+    loadComponent: () => import('./pages/task-detail/task-detail.component').then((m) => m.TaskDetailComponent),
   },
-  { path: '**', redirectTo: 'projects' },
+  { path: '**', redirectTo: 'dashboard' },
 ];

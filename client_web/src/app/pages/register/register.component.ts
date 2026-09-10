@@ -4,53 +4,82 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { ApiError } from '../../core/models';
+import { LogoComponent } from '../../core/ui/logo.component';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, LogoComponent],
+  styleUrl: '../auth.css',
   template: `
-    <div class="auth-card">
-      <h1>Créer un compte</h1>
-      <p class="sub">Quelques secondes suffisent.</p>
+    <div class="auth">
+      <aside class="pitch">
+        <div class="brand"><app-logo [size]="34" /><span>PMT</span></div>
 
-      <form (ngSubmit)="submit()" #f="ngForm">
-        <div class="row">
-          <div>
-            <label for="firstName">Prénom</label>
-            <input id="firstName" name="firstName" [(ngModel)]="firstName" required />
-          </div>
-          <div>
-            <label for="lastName">Nom</label>
-            <input id="lastName" name="lastName" [(ngModel)]="lastName" required />
+        <div class="argument">
+          <h2>Trois rôles, et chacun sait ce qu'il peut faire.</h2>
+          <p>Administrateur, membre, observateur. Les permissions sont vérifiées à chaque
+             requête côté serveur — pas seulement dans l'interface.</p>
+          <div class="figures">
+            <div><span class="figure">60</span><span class="figure-label">Caractères de hachage</span></div>
+            <div class="rule"></div>
+            <div><span class="figure">0</span><span class="figure-label">Mot de passe en clair</span></div>
           </div>
         </div>
 
-        <label for="email">Adresse e-mail</label>
-        <input id="email" name="email" type="email" [(ngModel)]="email" required autocomplete="email" />
+        <span class="footnote">Tech-Crud · 2026</span>
+      </aside>
 
-        <label for="password">Mot de passe</label>
-        <input id="password" name="password" type="password" [(ngModel)]="password" required
-               minlength="8" autocomplete="new-password" />
-        <small>8 caractères minimum.</small>
+      <main class="form-side">
+        <form class="form" (ngSubmit)="submit()" #f="ngForm">
+          <header>
+            <h1>Créer un compte</h1>
+            <p class="sub">Quelques secondes suffisent.</p>
+          </header>
 
-        @if (error()) {
-          <p class="error" role="alert">{{ error() }}</p>
-          @if (fieldErrors()) {
-            <ul class="error-list">
-              @for (entry of fieldErrors() | keyvalue; track entry.key) {
-                <li>{{ entry.value }}</li>
+          <div class="row">
+            <div class="field">
+              <label for="firstName">Prénom</label>
+              <input id="firstName" name="firstName" [(ngModel)]="firstName" required maxlength="250" />
+            </div>
+            <div class="field">
+              <label for="lastName">Nom</label>
+              <input id="lastName" name="lastName" [(ngModel)]="lastName" required maxlength="250" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="email">Adresse e-mail</label>
+            <input id="email" name="email" type="email" [(ngModel)]="email" required
+                   autocomplete="email" placeholder="vous@exemple.fr" />
+          </div>
+
+          <div class="field">
+            <label for="password">Mot de passe</label>
+            <input id="password" name="password" type="password" [(ngModel)]="password" required
+                   minlength="8" autocomplete="new-password" placeholder="8 caractères minimum" />
+          </div>
+
+          @if (error()) {
+            <div class="error" role="alert">
+              {{ error() }}
+              @if (fieldErrors(); as fields) {
+                <ul class="error-list">
+                  @for (entry of fields | keyvalue; track entry.key) { <li>{{ entry.value }}</li> }
+                </ul>
               }
-            </ul>
+            </div>
           }
-        }
 
-        <button type="submit" [disabled]="loading() || f.invalid">
-          {{ loading() ? 'Création…' : 'Créer mon compte' }}
-        </button>
-      </form>
+          <button type="submit" class="block" [disabled]="loading() || f.invalid">
+            {{ loading() ? 'Création…' : 'Créer mon compte' }}
+          </button>
 
-      <p class="switch">Déjà inscrit ? <a routerLink="/login">Se connecter</a></p>
+          <div class="or"><span class="line"></span><span class="label">ou</span><span class="line"></span></div>
+
+          <a routerLink="/login" class="alt">J'ai déjà un compte</a>
+        </form>
+      </main>
     </div>
   `,
 })
@@ -73,8 +102,6 @@ export class RegisterComponent {
 
     this.auth.register(this.firstName, this.lastName, this.email, this.password).subscribe({
       next: () => {
-        // Inscription réussie : on enchaîne sur une vraie connexion pour
-        // obtenir un jeton, plutôt que de faire confiance au client.
         this.auth.login(this.email, this.password).subscribe({
           next: () => this.router.navigate(['/projects']),
           error: () => this.router.navigate(['/login']),

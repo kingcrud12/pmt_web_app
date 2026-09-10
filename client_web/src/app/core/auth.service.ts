@@ -2,24 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
-import { LoginResponse, User } from './models';
+import { LoginRequest, LoginResponse, RegisterRequest, UserResponse } from './models';
 
 const TOKEN_KEY = 'pmt.accessToken';
 const USER_KEY = 'pmt.user';
 
-/**
- * Le jeton est conservé en localStorage et envoyé dans l'en-tête
- * Authorization par l'intercepteur.
- *
- * Compromis assumé : un cookie HttpOnly protégerait mieux contre le vol par
- * XSS, mais réintroduirait le CSRF (le navigateur enverrait le cookie tout
- * seul). Avec l'en-tête, le CSRF est impossible par construction ; la parade
- * au XSS est de ne jamais injecter de HTML non échappé — ce que fait Angular
- * par défaut tant qu'on n'utilise pas [innerHTML].
- */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly currentUser = signal<User | null>(this.readStoredUser());
+  private readonly currentUser = signal<UserResponse | null>(this.readStoredUser());
 
   readonly user = this.currentUser.asReadonly();
   readonly isLoggedIn = computed(() => this.currentUser() !== null);
@@ -32,23 +22,17 @@ export class AuthService {
 
   login(email: string, password: string): Observable<LoginResponse> {
     return this.http
-      .post<LoginResponse>('/api/auth/login', { email, password })
+      .post<LoginResponse>('/api/auth/login', { email, password } satisfies LoginRequest)
       .pipe(tap((res) => this.store(res)));
   }
 
-  register(firstName: string, lastName: string, email: string, password: string): Observable<User> {
-    return this.http.post<User>('/api/auth/register', { firstName, lastName, email, password });
+  register(firstName: string, lastName: string, email: string, password: string): Observable<UserResponse> {
+    const body: RegisterRequest = { firstName, lastName, email, password };
+    return this.http.post<UserResponse>('/api/auth/register', body);
   }
 
-  /**
-   * Recharge le profil depuis le serveur.
-   *
-   * Le localStorage n'est qu'un cache : il garde la copie prise au moment de
-   * la connexion, qui peut avoir vieilli. /api/auth/me fait foi — et vérifie
-   * au passage que le jeton est encore valide.
-   */
-  me(): Observable<User> {
-    return this.http.get<User>('/api/auth/me').pipe(tap((user) => this.storeUser(user)));
+  me(): Observable<UserResponse> {
+    return this.http.get<UserResponse>('/api/auth/me').pipe(tap((user) => this.storeUser(user)));
   }
 
   logout(): void {
@@ -63,16 +47,16 @@ export class AuthService {
     this.storeUser(res.user);
   }
 
-  private storeUser(user: User): void {
+  private storeUser(user: UserResponse): void {
     localStorage.setItem(USER_KEY, JSON.stringify(user));
     this.currentUser.set(user);
   }
 
-  private readStoredUser(): User | null {
+  private readStoredUser(): UserResponse | null {
     const raw = localStorage.getItem(USER_KEY);
     if (!raw) return null;
     try {
-      return JSON.parse(raw) as User;
+      return JSON.parse(raw) as UserResponse;
     } catch {
       return null;
     }
