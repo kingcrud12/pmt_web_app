@@ -22,15 +22,6 @@ import org.hibernate.type.SqlTypes;
 import java.time.Instant;
 import java.util.UUID;
 
-/**
- * L'utilisateur — MODELE UNIQUE de l'application.
- *
- * En architecture en couches, cette classe joue les deux roles a la fois :
- * elle decrit le stockage (annotations JPA) ET porte le modele metier (types
- * Email et HashedPassword). C'est le compromis assume : un seul objet, un seul
- * endroit a maintenir, au prix de la separation stricte que l'hexagonal
- * garantissait.
- */
 @Entity
 @Table(
         name = "users",
@@ -43,15 +34,6 @@ import java.util.UUID;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(exclude = "password")
 public class Users {
-
-    /**
-     * @JdbcTypeCode(CHAR) est INDISPENSABLE.
-     *
-     * Par defaut, Hibernate 6+ envoie un UUID au pilote JDBC sous forme
-     * BINAIRE (16 octets). Face a une colonne CHAR(36) textuelle, MySQL repond
-     * « Incorrect string value ». columnDefinition ne corrige rien : il ne sert
-     * qu'a generer le DDL, pas a encoder la valeur transmise.
-     */
     @Id
     @JdbcTypeCode(SqlTypes.CHAR)
     @Column(name = "id", columnDefinition = "CHAR(36)", length = 36, updatable = false, nullable = false)
@@ -75,14 +57,6 @@ public class Users {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
-    /**
-     * Fabrique un utilisateur qui n'existait pas encore.
-     *
-     * L'application possede l'identite et la date : c'est pourquoi il n'y a ni
-     * @GeneratedValue ni @CreationTimestamp. Ca supprime au passage le
-     * probleme des deux horloges (JVM et serveur MySQL) qui pouvaient se
-     * contredire.
-     */
     public static Users create(String firstName,
                                String lastName,
                                Email email,

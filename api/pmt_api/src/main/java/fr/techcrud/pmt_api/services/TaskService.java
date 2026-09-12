@@ -21,7 +21,6 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class TaskService {
-
     private final TaskRepository taskRepository;
     private final UsersRepository usersRepository;
     private final ProjectMemberRepository projectMemberRepository;
@@ -43,7 +42,6 @@ public class TaskService {
         return TaskResponse.of(taskRepository.save(task));
     }
 
-    /** Visible par tous les membres, observateurs compris. */
     @Transactional(readOnly = true)
     public List<TaskResponse> listByProject(UUID projectId, UUID callerId) {
         access.requireMember(projectId, callerId);
@@ -61,9 +59,6 @@ public class TaskService {
     public TaskResponse update(UUID taskId, UpdateTaskRequest request, UUID callerId) {
         Task task = loadTask(taskId);
 
-        // L'autorisation passe par le PROJET de la tache, jamais par un
-        // identifiant fourni dans la requete. Un appelant qui devine un UUID de
-        // tache d'un autre projet obtient donc un 404, pas ses donnees.
         access.requireTaskWriter(task.getProject().getId(), callerId);
 
         if (request.endDate() != null && request.dueDate() != null
@@ -84,8 +79,6 @@ public class TaskService {
         return TaskResponse.of(taskRepository.save(task));
     }
 
-    // ---------------------------------------------------------------- prive
-
     private Task loadTask(UUID taskId) {
         return taskRepository.findById(taskId)
                 .orElseThrow(() -> new ResourceNotFoundException("Tache introuvable"));
@@ -97,13 +90,6 @@ public class TaskService {
         return task;
     }
 
-    /**
-     * Resout l'assigne, en verifiant qu'il appartient bien AU MEME projet.
-     *
-     * Sans ce controle, on pourrait assigner une tache a n'importe quel
-     * utilisateur de la plateforme en devinant son UUID — et lui exposer le
-     * contenu du projet dans ses notifications.
-     */
     private Users resolveAssignee(UUID projectId, String assigneeId) {
         if (assigneeId == null || assigneeId.isBlank()) {
             return null;

@@ -18,18 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * La couche HTTP, et rien d'autre.
- *
- * Trois responsabilites : desserialiser le JSON, declencher la validation,
- * traduire le resultat. Aucune regle metier — si tu te surprends a ecrire un
- * "if" ici, il appartient au service.
- */
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
-
     private final AuthService authService;
     private final JwtService jwtService;
     private final CurrentUser currentUser;
@@ -41,7 +33,6 @@ public class AuthController {
         return UserResponse.from(user);
     }
 
-
     @PostMapping("/login")
     public LoginResponse login(@Valid @RequestBody LoginRequest request) {
         Users user = authService.login(request);
@@ -49,7 +40,6 @@ public class AuthController {
         return LoginResponse.of(token, jwtService.getExpirationSeconds(), UserResponse.from(user));
     }
 
-    /** Qui suis-je : le front s'en sert pour restaurer la session au rechargement. */
     @GetMapping("/me")
     public UserResponse me() {
         return UserResponse.from(currentUser.entity());

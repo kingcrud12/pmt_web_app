@@ -22,13 +22,6 @@ import org.hibernate.type.SqlTypes;
 import java.time.Instant;
 import java.util.UUID;
 
-/**
- * L'appartenance d'un utilisateur a un projet, avec son role.
- *
- * C'est la table qui porte TOUTE l'autorisation applicative. Chaque endpoint
- * projet ou tache commence par verifier qu'une ligne existe ici pour le couple
- * (utilisateur courant, projet demande) — c'est la parade aux failles IDOR.
- */
 @Entity
 @Table(
         name = "project_members",
@@ -40,7 +33,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ProjectMember {
-
     @Id
     @JdbcTypeCode(SqlTypes.CHAR)
     @Column(name = "id", columnDefinition = "CHAR(36)", length = 36, updatable = false, nullable = false)
@@ -55,10 +47,6 @@ public class ProjectMember {
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
 
-    /**
-     * EnumType.STRING et non ORDINAL : avec ORDINAL, inserer une valeur au
-     * milieu de l'enum decalerait silencieusement tous les roles deja en base.
-     */
     @Enumerated(EnumType.STRING)
     @Column(name = "role", length = 20, nullable = false)
     private ProjectRole role;

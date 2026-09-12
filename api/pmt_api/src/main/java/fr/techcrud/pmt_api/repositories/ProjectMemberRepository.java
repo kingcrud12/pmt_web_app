@@ -11,15 +11,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ProjectMemberRepository extends JpaRepository<ProjectMember, UUID> {
-
-    /** LA requete de securite : elle repond « cet utilisateur a-t-il acces, et a quel titre ? ». */
     Optional<ProjectMember> findByProjectIdAndUserId(UUID projectId, UUID userId);
 
     boolean existsByProjectIdAndUserId(UUID projectId, UUID userId);
 
     List<ProjectMember> findByProjectIdOrderByJoinedAtAsc(UUID projectId);
 
-    /** Les projets visibles par un utilisateur — jamais "tous les projets". */
     @Query("""
             SELECT m FROM ProjectMember m
             JOIN FETCH m.project p

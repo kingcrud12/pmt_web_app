@@ -28,14 +28,12 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class ProjectService {
-
     private final ProjectRepository projectRepository;
     private final ProjectMemberRepository projectMemberRepository;
     private final UsersRepository usersRepository;
     private final TaskRepository taskRepository;
     private final ProjectAccessService access;
 
-    /** Le createur devient automatiquement ADMIN de son projet. */
     @Transactional
     public ProjectResponse create(CreateProjectRequest request, Users creator) {
         Project project = projectRepository.save(
@@ -46,12 +44,6 @@ public class ProjectService {
         return ProjectResponse.of(project, ProjectRole.ADMIN, 1, 0, 0);
     }
 
-    /**
-     * Les projets de l'appelant — et uniquement les siens.
-     *
-     * On part des appartenances, jamais de findAll() sur les projets : c'est ce
-     * qui garantit qu'aucun projet d'une autre equipe ne peut fuir dans la liste.
-     */
     @Transactional(readOnly = true)
     public List<ProjectResponse> listMine(UUID userId) {
         return projectMemberRepository.findMembershipsOf(userId).stream()
@@ -65,7 +57,6 @@ public class ProjectService {
         return describe(membership.getProject(), membership.getRole());
     }
 
-    /** Assemble la vue d'un projet : role de l'appelant, effectif, avancement. */
     private ProjectResponse describe(Project project, ProjectRole myRole) {
         UUID id = project.getId();
         return ProjectResponse.of(
@@ -90,8 +81,6 @@ public class ProjectService {
 
         Email email = new Email(request.email());
 
-        // Message identique que l'utilisateur existe ou non : sinon l'endpoint
-        // devient un oracle permettant de tester quelles adresses sont inscrites.
         Users invited = usersRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Aucun utilisateur inscrit avec cette adresse"));
@@ -117,9 +106,6 @@ public class ProjectService {
                 .findByProjectIdAndUserId(projectId, targetUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("Membre introuvable"));
 
-        // Regle metier : le projet ne doit jamais se retrouver sans administrateur.
-        // Sans ce garde-fou, un admin peut se retrograder et rendre le projet
-        // definitivement ingerable — plus personne ne peut inviter ni promouvoir.
         boolean retiringAnAdmin =
                 target.getRole() == ProjectRole.ADMIN && request.role() != ProjectRole.ADMIN;
         if (retiringAnAdmin

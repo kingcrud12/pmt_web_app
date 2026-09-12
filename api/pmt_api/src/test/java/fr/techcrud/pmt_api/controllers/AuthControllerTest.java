@@ -27,29 +27,17 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * La couche web, isolee du reste.
- *
- * AuthService est remplace par un mock : on ne teste pas la regle metier ici
- * (AuthServiceTest s'en charge), mais uniquement ce dont le controleur est
- * responsable — JSON vers Java, et exception vers code de statut.
- *
- * Pas de base de donnees : @WebMvcTest ne charge que la couche web.
- */
 @WebMvcTest(AuthController.class)
 @Import(SecurityConfig.class)
 @Tag("integration")
 @DisplayName("POST /api/auth/register")
 class AuthControllerTest {
-
     @Autowired
     private MockMvc mockMvc;
 
     @MockitoBean
     private AuthService authService;
 
-    // AuthController porte aussi /login et /me : la tranche @WebMvcTest ne
-    // charge pas la couche securite, il faut donc doubler ces deux beans.
     @MockitoBean
     private JwtService jwtService;
 
@@ -135,10 +123,6 @@ class AuthControllerTest {
     @Test
     @DisplayName("un endpoint hors /api/auth exige un jeton (401)")
     void protectsEverythingElse() throws Exception {
-        // 401 et non 403 : depuis l'ajout du resource server JWT, Spring
-        // dispose d'un point d'entree capable de dire « presente un jeton ».
-        // Avant la couche JWT, faute de mecanisme d'authentification, il se
-        // rabattait sur un 403 muet.
         mockMvc.perform(post("/api/projects"))
                 .andExpect(status().isUnauthorized());
     }

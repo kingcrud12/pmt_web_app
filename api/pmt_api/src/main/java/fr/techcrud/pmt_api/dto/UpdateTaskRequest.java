@@ -8,13 +8,6 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
-/**
- * Mise a jour complete d'une tache.
- *
- * Noter l'ABSENCE de projectId : une tache ne change jamais de projet. L'y
- * autoriser ouvrirait une faille — deplacer une tache vers un projet dont on
- * est admin pour en prendre le controle.
- */
 public record UpdateTaskRequest(
         @NotBlank(message = "Le nom de la tache est obligatoire")
         @Size(max = 250, message = "Le nom ne peut pas depasser 250 caracteres")
@@ -33,7 +26,6 @@ public record UpdateTaskRequest(
         @NotNull(message = "Le statut est obligatoire")
         TaskStatus status,
 
-        /** null pour desassigner. */
         String assigneeId
 ) {
 }

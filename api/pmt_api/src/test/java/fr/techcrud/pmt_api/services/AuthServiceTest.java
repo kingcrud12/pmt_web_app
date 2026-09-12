@@ -25,17 +25,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-/**
- * La regle metier, testee SANS base de donnees.
- *
- * C'est l'equivalent en couches du RegisterUserTest de l'hexagonal : au lieu
- * d'un InMemoryUserRepository ecrit a la main, Mockito fabrique le double du
- * repository. Meme rapidite, un fichier de moins a maintenir.
- */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("AuthService.register")
 class AuthServiceTest {
-
     @Mock
     private UsersRepository usersRepository;
 

@@ -1,0 +1,327 @@
+name: CI / CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: cicd-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  API_IMAGE_NAME: pmt-api
+  WEB_IMAGE_NAME: pmt-web
+
+jobs:
+
+  test-api:
+    name: Tests API
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: pmt_db
+          MYSQL_USER: pmt_user
+          MYSQL_PASSWORD: pmt_pass
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -u root -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Installer Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Charger le schema
+        run: mysql -h 127.0.0.1 -P 3306 -u root -proot < db/init/init.sql
+
+      - name: Tests unitaires
+        working-directory: api/pmt_api
+        run: ./mvnw -B test
+
+      - name: Tests d'integration
+        working-directory: api/pmt_api
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/pmt_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Europe/Paris
+          SPRING_DATASOURCE_USERNAME: pmt_user
+          SPRING_DATASOURCE_PASSWORD: pmt_pass
+          PMT_JWT_SECRET: secret-de-ci-uniquement-32-caracteres-minimum
+        run: ./mvnw -B test -DexcludedGroups=
+
+      - name: Resume de la couverture backend
+        if: always()
+        working-directory: api/pmt_api
+        run: |
+          python3 - <<'PY'
+          import csv, pathlib
+          f = pathlib.Path("target/site/jacoco/jacoco.csv")
+          if not f.exists():
+              print("Rapport JaCoCo absent"); raise SystemExit
+          tot = {k: [0, 0] for k in ("INSTRUCTION", "BRANCH", "LINE", "METHOD")}
+          for r in csv.DictReader(f.open()):
+              for k in tot:
+                  tot[k][0] += int(r[k + "_MISSED"]); tot[k][1] += int(r[k + "_COVERED"])
+          lignes = ["| Metrique | Couverture | Couvert / Total |", "|---|---|---|"]
+          for k, (m, c) in tot.items():
+              t = m + c
+              lignes.append(f"| {k.title()} | {100*c/t:.1f} % | {c} / {t} |")
+          table = "\n".join(lignes)
+          print(table)
+          import os
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as fh:
+              fh.write("## Couverture backend (JaCoCo)\n\n" + table + "\n")
+          PY
+
+      - name: Publier les rapports backend
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: couverture-backend
+          path: |
+            api/pmt_api/target/site/jacoco/
+            api/pmt_api/target/surefire-reports/
+          retention-days: 30
+
+  test-web:
+    name: Build front
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Installer Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: client_web/package-lock.json
+
+      - name: Installer les dependances
+        working-directory: client_web
+        run: npm ci
+
+      - name: Tests et couverture
+        working-directory: client_web
+        run: npm run test:ci
+
+      - name: Resume de la couverture frontend
+        if: always()
+        working-directory: client_web
+        run: |
+          python3 - <<'PY'
+          import json, os, pathlib
+          f = pathlib.Path("coverage/client_web/coverage-summary.json")
+          if not f.exists():
+              import glob
+              g = glob.glob("coverage/**/coverage-summary.json", recursive=True)
+              if not g:
+                  print("Resume de couverture absent"); raise SystemExit
+              f = pathlib.Path(g[0])
+          t = json.load(f.open())["total"]
+          lignes = ["| Metrique | Couverture | Couvert / Total |", "|---|---|---|"]
+          for k in ("statements", "branches", "functions", "lines"):
+              d = t[k]
+              lignes.append(f"| {k.title()} | {d['pct']} % | {d['covered']} / {d['total']} |")
+          table = "\n".join(lignes)
+          print(table)
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as fh:
+              fh.write("## Couverture frontend (Karma)\n\n" + table + "\n")
+          PY
+
+      - name: Publier le rapport frontend
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: couverture-frontend
+          path: client_web/coverage/
+          retention-days: 30
+
+      - name: Compiler
+        working-directory: client_web
+        run: npm run build -- --configuration production
+
+  build-push:
+    name: Images
+    runs-on: ubuntu-latest
+    needs: [test-api, test-web]
+    if: github.event_name != 'pull_request'
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      api_image: ${{ steps.names.outputs.api }}
+      web_image: ${{ steps.names.outputs.web }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Calculer les noms d'images
+        id: names
+        run: |
+          owner="$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')"
+          echo "api=${REGISTRY}/${owner}/${API_IMAGE_NAME}" >> "$GITHUB_OUTPUT"
+          echo "web=${REGISTRY}/${owner}/${WEB_IMAGE_NAME}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Connexion a GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Construire et publier l'API
+        uses: docker/build-push-action@v6
+        with:
+          context: ./api/pmt_api
+          push: true
+          tags: |
+            ${{ steps.names.outputs.api }}:${{ github.sha }}
+            ${{ steps.names.outputs.api }}:latest
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,scope=api,mode=max
+
+      - name: Construire et publier le front
+        uses: docker/build-push-action@v6
+        with:
+          context: ./client_web
+          push: true
+          tags: |
+            ${{ steps.names.outputs.web }}:${{ github.sha }}
+            ${{ steps.names.outputs.web }}:latest
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,scope=web,mode=max
+
+  deploy:
+    name: Deploiement VPS
+    runs-on: ubuntu-latest
+    needs: build-push
+    if: github.ref == 'refs/heads/main'
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Preparer la cle SSH
+        env:
+          SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Copier les fichiers de deploiement
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+          USER: ${{ secrets.VPS_USER }}
+          PORT: ${{ secrets.VPS_PORT || '22' }}
+          DIR: ${{ secrets.VPS_APP_DIR || '/opt/pmt' }}
+        run: |
+          ssh -i ~/.ssh/id_deploy -p "$PORT" "$USER@$HOST" "mkdir -p '$DIR/db'"
+          scp -i ~/.ssh/id_deploy -P "$PORT" docker-compose.prod.yml "$USER@$HOST:$DIR/docker-compose.yml"
+          scp -i ~/.ssh/id_deploy -P "$PORT" -r db/init "$USER@$HOST:$DIR/db/"
+
+      - name: Ecrire le fichier d'environnement
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+          USER: ${{ secrets.VPS_USER }}
+          PORT: ${{ secrets.VPS_PORT || '22' }}
+          DIR: ${{ secrets.VPS_APP_DIR || '/opt/pmt' }}
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          PMT_JWT_SECRET: ${{ secrets.PMT_JWT_SECRET }}
+          PMT_CORS_ORIGINS: ${{ secrets.PMT_CORS_ORIGINS }}
+          WEB_PORT: ${{ secrets.WEB_PORT || '80' }}
+          API_IMAGE: ${{ needs.build-push.outputs.api_image }}:${{ github.sha }}
+          WEB_IMAGE: ${{ needs.build-push.outputs.web_image }}:${{ github.sha }}
+        run: |
+          {
+            echo "MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD"
+            echo "MYSQL_DATABASE=$MYSQL_DATABASE"
+            echo "MYSQL_USER=$MYSQL_USER"
+            echo "MYSQL_PASSWORD=$MYSQL_PASSWORD"
+            echo "PMT_JWT_SECRET=$PMT_JWT_SECRET"
+            echo "PMT_CORS_ORIGINS=$PMT_CORS_ORIGINS"
+            echo "WEB_PORT=$WEB_PORT"
+            echo "API_IMAGE=$API_IMAGE"
+            echo "WEB_IMAGE=$WEB_IMAGE"
+          } | ssh -i ~/.ssh/id_deploy -p "$PORT" "$USER@$HOST" \
+                "umask 077 && cat > '$DIR/.env'"
+
+      - name: Tirer les images et redemarrer
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+          USER: ${{ secrets.VPS_USER }}
+          PORT: ${{ secrets.VPS_PORT || '22' }}
+          DIR: ${{ secrets.VPS_APP_DIR || '/opt/pmt' }}
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GHCR_PULL_TOKEN }}
+        run: |
+          {
+            printf 'DIR=%q\n'        "$DIR"
+            printf 'GHCR_USER=%q\n'  "$GHCR_USER"
+            printf 'GHCR_TOKEN=%q\n' "${GHCR_TOKEN:-}"
+            cat <<'REMOTE'
+          set -euo pipefail
+          cd "$DIR"
+
+          if [ -n "$GHCR_TOKEN" ]; then
+            printf '%s' "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+          fi
+
+          docker compose pull
+          docker compose up -d --remove-orphans
+
+          docker image prune -f
+          REMOTE
+          } | ssh -i ~/.ssh/id_deploy -p "$PORT" "$USER@$HOST" bash -s
+
+      - name: Verifier que le service repond
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+          USER: ${{ secrets.VPS_USER }}
+          PORT: ${{ secrets.VPS_PORT || '22' }}
+          DIR: ${{ secrets.VPS_APP_DIR || '/opt/pmt' }}
+        run: |
+          {
+            printf 'DIR=%q\n' "$DIR"
+            cat <<'REMOTE'
+          set -euo pipefail
+          cd "$DIR"
+
+          for i in $(seq 1 30); do
+            status="$(docker inspect --format '{{.State.Health.Status}}' pmt_api 2>/dev/null || echo absent)"
+            if [ "$status" = "healthy" ]; then
+              echo "API saine."
+              docker compose ps
+              exit 0
+            fi
+            echo "  etat de l'API : $status (essai $i/30)"
+            sleep 5
+          done
+
+          echo "L'API n'est pas devenue saine — 80 dernieres lignes :"
+          docker compose logs --tail 80 api
+          exit 1
+          REMOTE
+          } | ssh -i ~/.ssh/id_deploy -p "$PORT" "$USER@$HOST" bash -s

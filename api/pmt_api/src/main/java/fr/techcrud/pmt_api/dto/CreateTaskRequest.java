@@ -20,7 +20,6 @@ public record CreateTaskRequest(
         @NotNull(message = "La priorite est obligatoire")
         TaskPriority priority,
 
-        /** Facultatif, mais doit etre membre du projet — verifie par le service. */
         String assigneeId
 ) {
 }

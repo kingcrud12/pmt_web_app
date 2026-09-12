@@ -31,17 +31,12 @@ import java.util.UUID;
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Task {
-
     @Id
     @JdbcTypeCode(SqlTypes.CHAR)
     @Column(name = "id", columnDefinition = "CHAR(36)", length = 36, updatable = false, nullable = false)
     @EqualsAndHashCode.Include
     private UUID id;
 
-    /**
-     * Le projet porteur. C'est par lui que passe TOUTE l'autorisation : on ne
-     * verifie jamais les droits sur la tache elle-meme, mais sur son projet.
-     */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
@@ -66,7 +61,6 @@ public class Task {
     @Column(name = "status", length = 20, nullable = false)
     private TaskStatus status;
 
-    /** Facultatif, et toujours un MEMBRE du projet — verifie par le service. */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assignee_id")
     private Users assignee;

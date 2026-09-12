@@ -10,17 +10,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
-/**
- * Fournit l'utilisateur authentifie a partir du jeton.
- *
- * REGLE DE SECURITE CENTRALE : l'identite vient TOUJOURS d'ici, jamais d'un
- * parametre de requete. Un endpoint qui accepterait ?userId=... laisserait
- * n'importe qui agir au nom d'un autre — c'est la faille IDOR de base.
- */
 @Component
 @RequiredArgsConstructor
 public class CurrentUser {
-
     private final UsersRepository usersRepository;
 
     public UUID id() {
@@ -33,7 +25,7 @@ public class CurrentUser {
 
     public Users entity() {
         return usersRepository.findById(id())
-                // Jeton valide mais compte supprime entre-temps.
+
                 .orElseThrow(InvalidCredentialsException::new);
     }
 }

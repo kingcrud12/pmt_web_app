@@ -9,7 +9,6 @@ public record InviteMemberRequest(
         @Email(message = "Format d'email invalide")
         String email,
 
-        /** Facultatif : MEMBER par defaut. */
         ProjectRole role
 ) {
 }

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface TaskRepository extends JpaRepository<Task, UUID> {
-
     List<Task> findByProjectIdOrderByCreatedAtDesc(UUID projectId);
 
     long countByProjectId(UUID projectId);

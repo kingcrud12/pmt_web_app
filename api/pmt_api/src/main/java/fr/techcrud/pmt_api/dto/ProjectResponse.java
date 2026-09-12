@@ -6,13 +6,6 @@ import fr.techcrud.pmt_api.model.ProjectRole;
 import java.time.Instant;
 import java.time.LocalDate;
 
-/**
- * Un projet, vu par l'utilisateur courant.
- *
- * myRole permet au front d'afficher ou masquer les boutons. C'est du CONFORT
- * d'affichage uniquement : le serveur revalide le role a chaque action, on ne
- * fait jamais confiance a ce que le client croit avoir le droit de faire.
- */
 public record ProjectResponse(
         String id,
         String name,

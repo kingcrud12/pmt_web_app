@@ -11,17 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
-/**
- * Fabrique les jetons d'acces.
- *
- * Le jeton ne contient QUE l'identite (sub = id utilisateur) et l'email.
- * Deliberement AUCUN role de projet : les roles changent (un admin peut etre
- * retrograde) et un jeton, une fois emis, ne peut plus etre modifie. Les
- * autorisations sont donc relues en base a chaque requete.
- */
 @Service
 public class JwtService {
-
     private final JwtEncoder jwtEncoder;
     private final long expirationSeconds;
 

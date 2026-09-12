@@ -25,18 +25,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Aucun endpoint ne prend d'identifiant d'utilisateur en parametre.
- *
- * L'appelant vient TOUJOURS de currentUser.id(), c'est-a-dire du jeton signe.
- * Accepter un ?userId= reviendrait a laisser n'importe qui agir au nom d'un
- * autre : c'est la forme la plus directe d'une faille IDOR.
- */
 @RestController
 @RequestMapping("/api/projects")
 @RequiredArgsConstructor
 public class ProjectController {
-
     private final ProjectService projectService;
     private final TaskService taskService;
     private final CurrentUser currentUser;

@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("Email")
 class EmailTest {
-
     @Test
     @DisplayName("Un utilisateur fournit un email au format invalide")
     void rejectsAMalformedEmail() {

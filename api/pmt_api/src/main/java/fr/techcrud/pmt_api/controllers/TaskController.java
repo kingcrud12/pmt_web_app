@@ -19,11 +19,9 @@ import java.util.UUID;
 @RequestMapping("/api/tasks")
 @RequiredArgsConstructor
 public class TaskController {
-
     private final TaskService taskService;
     private final CurrentUser currentUser;
 
-    /** Visualisation unitaire — accessible a tous les membres, observateurs compris. */
     @GetMapping("/{taskId}")
     public TaskResponse getOne(@PathVariable UUID taskId) {
         return taskService.getOne(taskId, currentUser.id());

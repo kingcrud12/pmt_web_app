@@ -7,9 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 @Tag("integration")
 class PmtApiApplicationTests {
-
     @Test
     void contextLoads() {
     }
-
 }

@@ -26,7 +26,6 @@ import java.util.UUID;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString
 public class Project {
-
     @Id
     @JdbcTypeCode(SqlTypes.CHAR)
     @Column(name = "id", columnDefinition = "CHAR(36)", length = 36, updatable = false, nullable = false)
@@ -39,7 +38,6 @@ public class Project {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    /** LocalDate et non Instant : c'est une date metier, sans heure ni fuseau. */
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
 

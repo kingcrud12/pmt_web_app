@@ -16,23 +16,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Le seul test du projet qui exige MySQL. Lance d'abord :
- *   docker compose up -d
- *
- * Il verifie ce que les tests unitaires ne peuvent pas voir : que les
- * convertisseurs JPA fonctionnent dans les deux sens, et que l'UUID est bien
- * ecrit en CHAR(36) et non en binaire — le bug corrige par @JdbcTypeCode.
- *
- * @DataJpaTest est transactionnel : tout est annule a la fin, ta base de dev
- * n'est pas polluee.
- */
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Tag("integration")
 @DisplayName("UsersRepository (MySQL requis)")
 class UsersRepositoryTest {
-
     @Autowired
     private UsersRepository usersRepository;
 
@@ -74,7 +62,6 @@ class UsersRepositoryTest {
     void appliesTheEmailConverter() {
         usersRepository.saveAndFlush(newUser("casse-test@pmt.fr"));
 
-        // new Email(...) normalise en minuscules avant que JPA ne convertisse
         assertTrue(usersRepository.findByEmail(new Email("CASSE-TEST@PMT.FR")).isPresent());
     }
 

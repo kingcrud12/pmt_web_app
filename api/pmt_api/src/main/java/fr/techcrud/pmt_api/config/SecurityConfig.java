@@ -24,12 +24,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -58,19 +58,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // CSRF desactive, et c'est SAIN ici : le jeton voyage dans l'en-tete
-                // Authorization, que le navigateur n'ajoute jamais tout seul. Un site
-                // pirate peut forcer l'envoi d'un cookie, jamais d'un en-tete.
-                // Ce raisonnement s'effondrerait si on mettait le JWT en cookie.
+
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
-                        // Sans cette ligne, toute erreur 500 ressort en 403 : le renvoi
-                        // interne vers /error est une nouvelle requete.
+
                         .requestMatchers("/error").permitAll()
+
+                        .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
@@ -84,11 +82,13 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource(
-            @Value("${pmt.cors.allowed-origin}") String allowedOrigin) {
-
+            @Value("${pmt.cors.origins}") String origins) {
         CorsConfiguration config = new CorsConfiguration();
-        // Liste blanche explicite : jamais "*" des qu'il y a de l'authentification.
-        config.setAllowedOrigins(List.of(allowedOrigin));
+
+        config.setAllowedOrigins(Arrays.stream(origins.split(","))
+                .map(String::trim)
+                .filter(o -> !o.isEmpty())
+                .toList());
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setMaxAge(3600L);
